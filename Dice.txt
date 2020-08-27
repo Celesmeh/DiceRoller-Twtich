@@ -1,0 +1,5 @@
+TMI_TOKEN=oauth:cvbgmw0haqxtltngwla9nm1gtr7gtg
+CLIENT_ID=j1jnt9v9s4fmvl05v9gqamuf2si5p8
+BOT_NICK=thedicegodssay
+BOT_PREFIX=!DiceGods
+CHANNEL=Celesmeh
