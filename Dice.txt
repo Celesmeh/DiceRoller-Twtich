@@ -3,3 +3,8 @@ CLIENT_ID=j1jnt9v9s4fmvl05v9gqamuf2si5p8
 BOT_NICK=thedicegodssay
 BOT_PREFIX=!DiceGods
 CHANNEL=Celesmeh
+
+pip installs:
+pip install irc
+pip install adafruit-io
+pip install requests
