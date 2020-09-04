@@ -21,7 +21,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define WIFI_SSID "Dovahkiin"
 #define WIFI_PASS "FusRoDah"
 #define IO_USERNAME "Celesmeh"
-#define IO_KEY "aio_zoXp53WTh0Ayp7iOtSfuTco9lQmN"
+#define IO_KEY "aio_kihe8968JIi0HkEuZgPhrujDnJt8"
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
 
@@ -50,22 +50,8 @@ long randNum;
 void setup() {
   //Begin Serial Connection
   Serial.begin(9600);
-  //Connect to adafruit.io
-  io.connect();
-  //add message handler to feeds
-  diceT->onMessage(handleDice);
-  diceR->onMessage(handleDice);
-  //lmk if its connecting
-  while (io.status() < AIO_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println();
-  Serial.println(io.statusText());
-  //get feed values
-  diceT->get();
-  diceR->get();
 
+  //Begin Display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // setup the OLED
   display.clearDisplay();
   display.setTextColor(WHITE);
@@ -85,6 +71,24 @@ void setup() {
   menuItems[4] = 10;
   menuItems[5] = 12;
   menuItems[6] = 20;
+
+  //Connect to adafruit.io
+  io.connect();
+  //add message handler to feeds
+  diceT->onMessage(handleDice);
+  diceR->onMessage(handleDice);
+  //lmk if its connecting
+  while (io.status() < AIO_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.println(io.statusText());
+  //get feed values
+  diceT->get();
+  diceR->get();
+
+
 }
 
 //********************************************************************************************************
