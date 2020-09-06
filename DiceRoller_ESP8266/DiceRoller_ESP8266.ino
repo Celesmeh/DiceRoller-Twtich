@@ -20,8 +20,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 //Adafruit IO shit`
 #define WIFI_SSID "Dovahkiin"
 #define WIFI_PASS "FusRoDah"
-#define IO_USERNAME "Celesmeh"
-#define IO_KEY "aio_kihe8968JIi0HkEuZgPhrujDnJt8"
+#define IO_USERNAME  "Celesmeh"
+#define IO_KEY       "aio_cQCM66W3ZYgUJRX4qWLJoPxsTj3k"
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
 
@@ -33,6 +33,7 @@ AdafruitIO_Feed *diceR = io.feed("diceRoll");
 #define menu 6
 bool Next = HIGH;
 bool Dice = HIGH;
+bool diceNum = HIGH;
 String temp;
 char currentPrintOut[10];
 const int menuSize = 7;
@@ -43,6 +44,11 @@ int dArray = (menuItems[currMenu]);
 int roll = ESP8266TrueRandom.random(1, (menuItems[currMenu] + 1));
 int animationDelay = 200; //So that's 5 frames per second
 long randNum;
+int button1 = 14;
+int button2 = 12;
+int button3 = 13;
+int tSwitch = 15;
+int diceMulti = 1;
 
 
 //********************************************************************************************************
@@ -50,27 +56,6 @@ long randNum;
 void setup() {
   //Begin Serial Connection
   Serial.begin(9600);
-
-  //Begin Display
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // setup the OLED
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-  display.setTextSize(1);
-  display.drawRect(0, 8, 128, 1, WHITE);
-  display.setCursor(18, 1);
-  display.println("20 12 10 8 6 4 2"); // write the roll
-  drawWel();
-  display.display(); // write to display
-  pinMode(13, INPUT_PULLUP); // setup button 1
-  pinMode(12, INPUT_PULLUP); // setup button 2
-
-  menuItems[0] = 2;
-  menuItems[1] = 4;
-  menuItems[2] = 6;
-  menuItems[3] = 8;
-  menuItems[4] = 10;
-  menuItems[5] = 12;
-  menuItems[6] = 20;
 
   //Connect to adafruit.io
   io.connect();
@@ -88,7 +73,30 @@ void setup() {
   diceT->get();
   diceR->get();
 
+  //Begin Display
 
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // setup the OLED
+  display.clearDisplay();
+  display.setTextColor(WHITE);
+  display.setTextSize(1);
+  display.drawRect(0, 8, 128, 1, WHITE);
+  display.setCursor(18, 1);
+  display.println("20 12 10 8 6 4 2"); // write the roll
+  drawWel();
+  display.display(); // write to display
+  pinMode(button1, INPUT_PULLUP); // setup button 1
+  pinMode(button3, INPUT_PULLUP); // setup button 3
+  pinMode(button2, INPUT_PULLUP); // setup button 2
+  pinMode(2, OUTPUT); //led on
+  digitalWrite(2, LOW);
+
+  menuItems[0] = 2;
+  menuItems[1] = 4;
+  menuItems[2] = 6;
+  menuItems[3] = 8;
+  menuItems[4] = 10;
+  menuItems[5] = 12;
+  menuItems[6] = 20;
 }
 
 //********************************************************************************************************
@@ -98,8 +106,8 @@ void loop() {
 
   io.run();
 
-  //Menu Logic
-  if (digitalRead(13) != Next) {
+  //Menu Logic ***************************************************************
+  if (digitalRead(button1) != Next) {
     Next = !Next;
     delay(50);
     if (!Next) {
@@ -116,16 +124,36 @@ void loop() {
     }
   }
 
-  //Dice Logic
-  if (digitalRead(12) != Dice) {
-    Next = !Next;
+  //Dice # Logic ***************************************************************
+  if (digitalRead(button2) != diceNum) {
+    diceNum = !diceNum;
+    delay(50);
+    if (!diceNum) {
+      //pressed
+      if (diceMulti <= 9) {
+        diceMulti++;
+        Serial.println(diceMulti);
+        Serial.print("*****************");
+      }
+      else {
+        diceMulti = 1;
+        Serial.println(diceMulti);
+      }
+    }
+  }
+
+
+
+  //Dice Logic ***************************************************************
+  if (digitalRead(button3) != Dice) {
+    Dice = !Dice;
     delay(150);
-    if (!Next) {
+    if (!Dice) {
       delay(50);
-      diceT->save(menuItems[currMenu]);
-      Serial.print("sending ->Dice Type ");
+      // diceT->save(menuItems[currMenu]);
+      //Serial.print("sending ->Dice Type ");
       diceRoll();
-      breakfastSerials();
+      //breakfastSerials();
     }
   }
 }
@@ -158,7 +186,7 @@ void ClearDice() {
 //********************************************************************************************************
 //Dice Feed Handler
 
-void handleDice(AdafruitIO_Data *data) {
+void handleDice(AdafruitIO_Data * data) {
 
   Serial.print("received <- ");
   Serial.print(data->feedName());
@@ -166,7 +194,6 @@ void handleDice(AdafruitIO_Data *data) {
   Serial.println(data->value());
 
 }
-
 
 //********************************************************************************************************
 //Menu
@@ -192,60 +219,175 @@ void MenuChanged() {
 
 }
 
-//********************************************************************************************************
-//Dice Rolls
-
+////********************************************************************************************************
+////Dice Rolls
+//
 void diceRoll() {
-  Serial.println("button state has changed");
+  int diceRolling = (menuItems[currMenu] + 1);
   display.fillScreen(BLACK); // erase all
   display.drawRect(0, 8, 128, 1, WHITE);
   menuBar();
   dicePic();
-  //Our Roll
-  int roll = ESP8266TrueRandom.random(1, (menuItems[currMenu] + 1));
 
-  // OLED make purdy
-  if (roll == 1 && menuItems[currMenu] == 20) {
-    display.fillScreen(BLACK); // erase all
-    menuBar();
-    drawSkull();
-    FontDice();
-    display.setCursor(87, 14);
-    display.println(roll); //get rekt
-    diceR->save(roll);
-    Serial.print("sending -> Dice Roll ");
-  }
-  else if (roll == 20 && menuItems[currMenu] == 20) {
-    display.fillScreen(BLACK); // erase all
-    menuBar();
-    drawStar();
-    FontDice();
-    display.setCursor(77, 14);
-    display.println(roll); // daaamn yuss
-    diceR->save(roll);
-    Serial.print("sending -> Dice Roll ");
-  }
-  else if (roll < 10) {
-    //single character number
-    FontDice();
-    display.setCursor(87, 14);
-    display.println(roll); // write the roll
-    diceR->save(roll);
-    Serial.print("sending -> Dice Roll ");
-
-  }
-  else {
-    // dual character number
-    FontDice();
-    display.setCursor(77, 14);
-    display.println(roll); // write the roll
-    diceR->save(roll);
-    Serial.print("sending -> Dice Roll ");
+  for (int i = 1; i <= diceMulti; i++) {
+    int roll = ESP8266TrueRandom.random(1, diceRolling);
+    results[i] = roll;
   }
 
-  display.display(); // write to display
-  delay(100);
+  switch (diceMulti) {
+    case 1:
+      // display the dice if no multiplier
+      if (results[1] == 1 && menuItems[currMenu] == 20) {
+        display.fillScreen(BLACK); // erase all
+        menuBar();
+        drawSkull();
+        FontDice();
+        display.setCursor(87, 14);
+        display.println(results[1]); //get rekt
+        diceR->save(results[1]);
+        Serial.print("sending -> Dice Roll ");
+      }
+      else if (results[1] == 20 && menuItems[currMenu] == 20) {
+        display.fillScreen(BLACK); // erase all
+        menuBar();
+        drawStar();
+        FontDice();
+        display.setCursor(77, 14);
+        display.println(results[1]); // daaamn yuss
+        diceR->save(results[1]);
+        Serial.print("sending -> Dice Roll ");
+      }
+      else if (results[1] < 10) {
+        //single character number
+        FontDice();
+        display.setCursor(87, 14);
+        display.println(results[1]); // write the roll
+        diceR->save(results[1]);
+        Serial.print("sending -> Dice Roll ");
+
+      }
+      else {
+        // dual character number
+        FontDice();
+        display.setCursor(77, 14);
+        display.println(results[1]); // write the roll
+        diceR->save(results[1]);
+        Serial.print("sending -> Dice Roll ");
+      }
+
+      display.display(); // write to display
+      delay(100);
+      Serial.println("**********");
+      Serial.println(results[1]);
+      break;
+    case 2:
+      //display.fillScreen(BLACK); // erase all
+      
+      display.setTextSize(1);
+      display.setCursor(77, 12);
+      display.println(results[1]);
+      display.setCursor(97, 12);
+      display.println(results[2]);
+      display.setCursor(77, 25);
+      display.print("=");
+      display.print(results[1] + results[2]);
+      display.display(); // write to display
+      delay(100);
+      Serial.println(results[1]);
+      Serial.println(results[2]);
+      break;
+    case 3:
+
+      break;
+    case 4:
+
+      break;
+    case 5:
+
+      break;
+    case 6:
+
+      break;
+    case 7:
+
+      break;
+    case 8:
+
+      break;
+    case 9:
+
+      break;
+    case 10:
+
+      break;
+  }
+
 }
+//  Serial.println("button state has changed");
+
+//  //Our Roll
+//  int diceRolling = (menuItems[currMenu] + 1);
+//
+//
+//  // OLED make purdy
+//  if (diceMulti == 1) {
+//    //roll teh dice
+//    int roll = ESP8266TrueRandom.random(1, diceRolling);
+//    //display the dice if no multiplier
+//    if (roll == 1 && menuItems[currMenu] == 20) {
+//      display.fillScreen(BLACK); // erase all
+//      menuBar();
+//      drawSkull();
+//      FontDice();
+//      display.setCursor(87, 14);
+//      display.println(roll); //get rekt
+//      diceR->save(roll);
+//      Serial.print("sending -> Dice Roll ");
+//    }
+//    else if (roll == 20 && menuItems[currMenu] == 20) {
+//      display.fillScreen(BLACK); // erase all
+//      menuBar();
+//      drawStar();
+//      FontDice();
+//      display.setCursor(77, 14);
+//      display.println(roll); // daaamn yuss
+//      diceR->save(roll);
+//      Serial.print("sending -> Dice Roll ");
+//    }
+//    else if (roll < 10) {
+//      //single character number
+//      FontDice();
+//      display.setCursor(87, 14);
+//      display.println(roll); // write the roll
+//      diceR->save(roll);
+//      Serial.print("sending -> Dice Roll ");
+//
+//    }
+//    else {
+//      // dual character number
+//      FontDice();
+//      display.setCursor(77, 14);
+//      display.println(roll); // write the roll
+//      diceR->save(roll);
+//      Serial.print("sending -> Dice Roll ");
+//    }
+//
+//    display.display(); // write to display
+//    delay(100);
+//  }
+//
+// if (diceMulti == 2){
+//
+//    Serial.print("nah");
+////    if (diceMulti == 2); {
+
+//    }
+//
+//
+//
+//
+//
+//  }
 
 
 //********************************************************************************************************
