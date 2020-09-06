@@ -31,6 +31,10 @@ AdafruitIO_Feed *diceR = io.feed("diceRoll");
 //Define+Variables
 
 #define menu 6
+#define BUTTON1 14
+#define BUTTON2 12
+#define BUTTON3 13
+#define TILT_SWITCH 16
 int results[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 bool Next = HIGH;
 bool Dice = HIGH;
@@ -46,10 +50,6 @@ int dArray = (menuItems[currMenu]);
 int roll = ESP8266TrueRandom.random(1, (menuItems[currMenu] + 1));
 int animationDelay = 200; //So that's 5 frames per second
 long randNum;
-int button1 = 14;
-int button2 = 12;
-int button3 = 13;
-int tSwitch = 16;
 int switchState = 0;
 int diceMulti = 1;
 
@@ -94,10 +94,10 @@ void setup() {
   display.println("20 12 10 8 6 4 2"); // write the roll
   drawWel();
   display.display(); // write to display
-  pinMode(button1, INPUT_PULLUP); // setup button 1
-  pinMode(button3, INPUT_PULLUP); // setup button 3
-  pinMode(button2, INPUT_PULLUP); // setup button 2
-  pinMode(tSwitch, INPUT_PULLUP); // setup button 4
+  pinMode(BUTTON1, INPUT_PULLUP); // setup button 1
+  pinMode(BUTTON3, INPUT_PULLUP); // setup button 3
+  pinMode(BUTTON2, INPUT_PULLUP); // setup button 2
+  pinMode(TILT_SWITCH, INPUT_PULLUP); // setup button 4
   pinMode(2, OUTPUT); //led on
   digitalWrite(2, LOW);
 }
@@ -110,7 +110,7 @@ void loop() {
   io.run();
 
   //Menu Logic ***************************************************************
-  if (digitalRead(button1) != Next) {
+  if (digitalRead(BUTTON1) != Next) {
     Next = !Next;
     delay(50);
     if (!Next) {
@@ -129,7 +129,7 @@ void loop() {
   }
 
   //Dice # Logic ***************************************************************
-  if (digitalRead(button2) != diceNum) {
+  if (digitalRead(BUTTON2) != diceNum) {
     diceNum = !diceNum;
     delay(50);
     if (!diceNum) {
@@ -150,7 +150,7 @@ void loop() {
 
 
   //Dice Logic ***************************************************************
-  if (digitalRead(button3) != Dice) {
+  if (digitalRead(BUTTON3) != Dice) {
     Dice = !Dice;
     delay(150);
     if (!Dice) {
@@ -161,8 +161,8 @@ void loop() {
       breakfastSerials();
     }
   }
-    //Dice Logic ***************************************************************
-  switchState = digitalRead(tSwitch);
+    //Tilt Logic ***************************************************************
+  switchState = digitalRead(TILT_SWITCH);
   Serial.print(switchState);
 
 }
