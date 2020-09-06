@@ -21,7 +21,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define WIFI_SSID "Dovahkiin"
 #define WIFI_PASS "FusRoDah"
 #define IO_USERNAME  "Celesmeh"
-#define IO_KEY       "aio_WIRk02S0sVmtlc6XqYSx2pTE38vD"
+#define IO_KEY       "aio_KPyw81v7Al4VIe60GCFSkMt6Cxf1"
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
 
@@ -49,7 +49,8 @@ long randNum;
 int button1 = 14;
 int button2 = 12;
 int button3 = 13;
-int tSwitch = 15;
+int tSwitch = 16;
+int switchState = 0;
 int diceMulti = 1;
 
 
@@ -71,6 +72,13 @@ void setup() {
   }
   Serial.println();
   Serial.println(io.statusText());
+  menuItems[0] = 2;
+  menuItems[1] = 4;
+  menuItems[2] = 6;
+  menuItems[3] = 8;
+  menuItems[4] = 10;
+  menuItems[5] = 12;
+  menuItems[6] = 20;
   //get feed values
   diceT->get();
   diceR->get();
@@ -89,16 +97,9 @@ void setup() {
   pinMode(button1, INPUT_PULLUP); // setup button 1
   pinMode(button3, INPUT_PULLUP); // setup button 3
   pinMode(button2, INPUT_PULLUP); // setup button 2
+  pinMode(tSwitch, INPUT_PULLUP); // setup button 4
   pinMode(2, OUTPUT); //led on
   digitalWrite(2, LOW);
-
-  menuItems[0] = 2;
-  menuItems[1] = 4;
-  menuItems[2] = 6;
-  menuItems[3] = 8;
-  menuItems[4] = 10;
-  menuItems[5] = 12;
-  menuItems[6] = 20;
 }
 
 //********************************************************************************************************
@@ -124,6 +125,7 @@ void loop() {
       MenuChanged();
       Serial.print (currMenu);
     }
+    
   }
 
   //Dice # Logic ***************************************************************
@@ -141,7 +143,7 @@ void loop() {
         diceMulti = 1;
         Serial.println(diceMulti);
       }
-            multi();
+      multi();
     }
   }
 
@@ -153,12 +155,16 @@ void loop() {
     delay(150);
     if (!Dice) {
       delay(50);
-      // diceT->save(menuItems[currMenu]);
-      //Serial.print("sending ->Dice Type ");
+      diceT->save(menuItems[currMenu]);
+      Serial.print("sending ->Dice Type ");
       diceRoll();
-      //breakfastSerials();
+      breakfastSerials();
     }
   }
+    //Dice Logic ***************************************************************
+  switchState = digitalRead(tSwitch);
+  Serial.print(switchState);
+
 }
 
 
@@ -202,7 +208,6 @@ void handleDice(AdafruitIO_Data * data) {
 //Menu
 
 void MenuChanged() {
-
   display.clearDisplay();
   display.drawRect(0, 8, 128, 1, WHITE);
   menuBar();
@@ -216,20 +221,20 @@ void MenuChanged() {
   temp = String (menuItems[currMenu]);
   temp.toCharArray (currentPrintOut, 10);
   display.print("D");
-  display.println(currentPrintOut); // write the roll
+  display.println(currentPrintOut);
   Serial.println(currentPrintOut); // write the roll
   display.display(); // write to display
   delay(25);
-
 }
 
 ////********************************************************************************************************
 ////Multiplier
 
 void multi() {
+  display.setTextSize(1);
   display.setCursor(110, 25);
   display.drawRect(110, 25, 128, 10, BLACK);
-  display.fillRect(100, 25, 128, 10, BLACK);
+  display.fillRect(110, 25, 128, 10, BLACK);
   display.print("x");
   display.print(diceMulti);
   display.display();
@@ -456,7 +461,6 @@ void menuBar() {
   int lnStrt = 16;
   int rSize[] = {12, 12, 14, 14, 15, 15, 15};
   int offset[] = {88, 76, 64, 52, 37, 18, 0};
-  int num[] = {2, 4, 6, 8, 10, 12, 20};
   //  for (int i = 0; i <= 7; i++) {
   //    display.setCursor(offset[i]+lnStrt, 1);
   //    display.println(display.println(num[i]));
@@ -466,7 +470,7 @@ void menuBar() {
   int curOffset = (offset[currMenu] + 18);
   display.setTextColor(BLACK);
   display.setCursor(curOffset, 1);
-  display.println(num[currMenu]);
+  display.println(menuItems[currMenu]);
 }
 
 //********************************************************************************************************
