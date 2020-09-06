@@ -21,7 +21,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define WIFI_SSID "Dovahkiin"
 #define WIFI_PASS "FusRoDah"
 #define IO_USERNAME  "Celesmeh"
-#define IO_KEY       "aio_cQCM66W3ZYgUJRX4qWLJoPxsTj3k"
+#define IO_KEY       "aio_WIRk02S0sVmtlc6XqYSx2pTE38vD"
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
 
@@ -39,6 +39,7 @@ String temp;
 char currentPrintOut[10];
 const int menuSize = 7;
 byte menuItems[menuSize];
+int sum = 0;
 int currMenu = 0;
 int rolling = currMenu + 1;
 int dArray = (menuItems[currMenu]);
@@ -140,6 +141,7 @@ void loop() {
         diceMulti = 1;
         Serial.println(diceMulti);
       }
+            multi();
     }
   }
 
@@ -181,7 +183,7 @@ void FontDice() {
 }
 
 void ClearDice() {
-  display.fillRect(10, 9, 128, 23,  BLACK);
+  display.fillRect(5, 9, 128, 23,  BLACK);
 }
 
 //********************************************************************************************************
@@ -200,6 +202,7 @@ void handleDice(AdafruitIO_Data * data) {
 //Menu
 
 void MenuChanged() {
+
   display.clearDisplay();
   display.drawRect(0, 8, 128, 1, WHITE);
   menuBar();
@@ -221,15 +224,40 @@ void MenuChanged() {
 }
 
 ////********************************************************************************************************
+////Multiplier
+
+void multi() {
+  display.setCursor(110, 25);
+  display.drawRect(110, 25, 128, 10, BLACK);
+  display.fillRect(100, 25, 128, 10, BLACK);
+  display.print("x");
+  display.print(diceMulti);
+  display.display();
+}
+////********************************************************************************************************
+////Sum Function
+void diceSum() {
+  sum = 0;
+  display.setCursor(77, 25);
+  display.print("= ");
+  for (int i = 1; i <= diceMulti; i++) {
+    sum += results[i];
+  }
+  display.print(sum);
+}
+
+////********************************************************************************************************
 ////Dice Rolls
-//
+
 void diceRoll() {
   int diceRolling = (menuItems[currMenu] + 1);
   display.fillScreen(BLACK); // erase all
   display.drawRect(0, 8, 128, 1, WHITE);
   menuBar();
   dicePic();
+  sum = 0;
 
+  //dice rolling
   for (int i = 1; i <= diceMulti; i++) {
     int roll = ESP8266TrueRandom.random(1, diceRolling);
     results[i] = roll;
@@ -277,118 +305,143 @@ void diceRoll() {
       }
 
       display.display(); // write to display
-      delay(100);
-      Serial.println("**********");
-      Serial.println(results[1]);
       break;
+
     case 2:
-      //display.fillScreen(BLACK); // erase all
-      
+      Serial.print(diceMulti);
       display.setTextSize(1);
-      display.setCursor(77, 12);
-      display.println(results[1]);
-      display.setCursor(97, 12);
-      display.println(results[2]);
-      display.setCursor(77, 25);
-      display.print("=");
-      display.print(results[1] + results[2]);
-      display.display(); // write to display
-      delay(100);
-      Serial.println(results[1]);
-      Serial.println(results[2]);
+      display.setCursor(77, 9);
+      for (int i = 1; i <= diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 3:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(67, 9);
+      for (int i = 1; i <= diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 4:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(60, 9);
+      for (int i = 1; i <= diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 5:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(50, 9);
+      for (int i = 1; i <= diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 6:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(47, 9);
+      for (int i = 1; i <= 5; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      display.setCursor(87, 17);
+      for (int i = 5; i < diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 7:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(47, 9);
+      for (int i = 1; i <= 5; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      display.setCursor(77, 17);
+      for (int i = 5; i < diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
     case 8:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(47, 9);
+      for (int i = 1; i <= 5; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      display.setCursor(67, 17);
+      for (int i = 5; i < diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
-    case 9:
 
+    case 9:
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(47, 9);
+      for (int i = 1; i <= 5; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      display.setCursor(57, 17);
+      for (int i = 5; i < diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
     case 10:
-
+      Serial.print(diceMulti);
+      display.setTextSize(1);
+      display.setCursor(47, 9);
+      for (int i = 1; i <= 5; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      display.setCursor(50, 17);
+      for (int i = 5; i < diceMulti; i++) {
+        display.print(results[i]);
+        display.print(" ");
+      }
+      diceSum();
+      display.display();
       break;
+
   }
-
 }
-//  Serial.println("button state has changed");
 
-//  //Our Roll
-//  int diceRolling = (menuItems[currMenu] + 1);
-//
-//
-//  // OLED make purdy
-//  if (diceMulti == 1) {
-//    //roll teh dice
-//    int roll = ESP8266TrueRandom.random(1, diceRolling);
-//    //display the dice if no multiplier
-//    if (roll == 1 && menuItems[currMenu] == 20) {
-//      display.fillScreen(BLACK); // erase all
-//      menuBar();
-//      drawSkull();
-//      FontDice();
-//      display.setCursor(87, 14);
-//      display.println(roll); //get rekt
-//      diceR->save(roll);
-//      Serial.print("sending -> Dice Roll ");
-//    }
-//    else if (roll == 20 && menuItems[currMenu] == 20) {
-//      display.fillScreen(BLACK); // erase all
-//      menuBar();
-//      drawStar();
-//      FontDice();
-//      display.setCursor(77, 14);
-//      display.println(roll); // daaamn yuss
-//      diceR->save(roll);
-//      Serial.print("sending -> Dice Roll ");
-//    }
-//    else if (roll < 10) {
-//      //single character number
-//      FontDice();
-//      display.setCursor(87, 14);
-//      display.println(roll); // write the roll
-//      diceR->save(roll);
-//      Serial.print("sending -> Dice Roll ");
-//
-//    }
-//    else {
-//      // dual character number
-//      FontDice();
-//      display.setCursor(77, 14);
-//      display.println(roll); // write the roll
-//      diceR->save(roll);
-//      Serial.print("sending -> Dice Roll ");
-//    }
-//
-//    display.display(); // write to display
-//    delay(100);
-//  }
-//
-// if (diceMulti == 2){
-//
-//    Serial.print("nah");
-////    if (diceMulti == 2); {
-
-//    }
-//
-//
-//
-//
-//
-//  }
 
 
 //********************************************************************************************************
@@ -399,58 +452,21 @@ void menuBar() {
   display.setTextSize(1);
   display.drawRect(0, 8, 128, 1, WHITE);
   display.setCursor(18, 1);
-  display.println("20 12 10 8 6 4 2"); // write the roll
-
-
-  if (currMenu == 6) {
-    display.drawRect(16, 0, 15, 1, WHITE);
-    display.fillRect(16, 0, 15, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(18, 1);
-    display.println("20"); // write the roll
-  }
-  if (currMenu == 5) {
-    display.drawRect(34, 0, 15, 1, WHITE);
-    display.fillRect(34, 0, 15, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(36, 1);
-    display.println("12"); // write the roll
-  }
-  if (currMenu == 4) {
-    display.drawRect(53, 0, 15, 1, WHITE);
-    display.fillRect(53, 0, 15, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(54, 1);
-    display.println("10"); // write the roll
-  }
-  if (currMenu == 3) {
-    display.drawRect(68, 0, 14, 1, WHITE);
-    display.fillRect(68, 0, 14, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(72, 1);
-    display.println("8"); // write the roll
-  }
-  if (currMenu == 2) {
-    display.drawRect(80, 0, 14, 1, WHITE);
-    display.fillRect(80, 0, 14, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(85, 1);
-    display.println("6"); // write the roll
-  }
-  if (currMenu == 1) {
-    display.drawRect(92, 0, 12, 1, WHITE);
-    display.fillRect(92, 0, 12, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(96, 1);
-    display.println("4"); // write the roll
-  }
-  if (currMenu == 0) {
-    display.drawRect(104, 0, 12, 1, WHITE);
-    display.fillRect(104, 0, 12, 8, WHITE);
-    display.setTextColor(BLACK);
-    display.setCursor(108, 1);
-    display.println("2"); // write the roll
-  }
+  display.println("20 12 10 8 6 4 2");
+  int lnStrt = 16;
+  int rSize[] = {12, 12, 14, 14, 15, 15, 15};
+  int offset[] = {88, 76, 64, 52, 37, 18, 0};
+  int num[] = {2, 4, 6, 8, 10, 12, 20};
+  //  for (int i = 0; i <= 7; i++) {
+  //    display.setCursor(offset[i]+lnStrt, 1);
+  //    display.println(display.println(num[i]));
+  //  }
+  display.drawRect(lnStrt + offset[currMenu], 0, rSize[currMenu], 1, WHITE);
+  display.fillRect(lnStrt + offset[currMenu], 0, rSize[currMenu], 8, WHITE);
+  int curOffset = (offset[currMenu] + 18);
+  display.setTextColor(BLACK);
+  display.setCursor(curOffset, 1);
+  display.println(num[currMenu]);
 }
 
 //********************************************************************************************************
@@ -631,7 +647,7 @@ void diceDraw() {
         , 0x00, 0x00, 0x00, 0x00, 0x00
 
       };
-      display.drawBitmap(14, 10, imd2, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd2, 40, 22, 1); // draw d20
       break;
     case 1:
       static const unsigned char PROGMEM imd4[] = {
@@ -658,7 +674,7 @@ void diceDraw() {
         , 0x00, 0x1f, 0xc0, 0x00, 0x00
         , 0x00, 0x08, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd4, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd4, 40, 22, 1); // draw d20
       break;
     case 2:
       static const unsigned char PROGMEM imd6[] = {
@@ -685,7 +701,7 @@ void diceDraw() {
         , 0x00, 0x00, 0x3f, 0x00, 0x00
         , 0x00, 0x00, 0x0c, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd6, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd6, 40, 22, 1); // draw d20
       break;
     case 3:
       static const unsigned char PROGMEM imd8[] = {
@@ -712,7 +728,7 @@ void diceDraw() {
         , 0x00, 0x00, 0x00, 0xfe, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd8, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd8, 40, 22, 1); // draw d20
       break;
     case 4:
       static const unsigned char PROGMEM imd10[] = {
@@ -739,7 +755,7 @@ void diceDraw() {
         , 0x00, 0x00, 0x03, 0xf8, 0x00
         , 0x00, 0x00, 0x00, 0x10, 0x00
       };
-      display.drawBitmap(14, 10, imd10, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd10, 40, 22, 1); // draw d20
       break;
     case 5:
       static const unsigned char PROGMEM imd12[] = {
@@ -766,7 +782,7 @@ void diceDraw() {
         , 0x00, 0x3e, 0x00, 0x78, 0x00
         , 0x00, 0x01, 0xff, 0x80, 0x00
       };
-      display.drawBitmap(14, 10, imd12, 40, 22, 1);
+      display.drawBitmap(5, 10, imd12, 40, 22, 1);
       break;
     case 6:
       static const unsigned char PROGMEM imd20[] = {
@@ -793,7 +809,7 @@ void diceDraw() {
         , 0x00, 0x3f, 0xff, 0xfc, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd20, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd20, 40, 22, 1); // draw d20
       break;
   }
 
@@ -828,7 +844,7 @@ void diceDrawr() {
         , 0x00, 0x00, 0x1f, 0x00, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd2r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd2r, 40, 22, 1); // draw d20
       break;
     case 1:
       static const unsigned char PROGMEM imd4r[] = {
@@ -856,7 +872,7 @@ void diceDrawr() {
         , 0x00, 0x03, 0x00, 0x00, 0x00
 
       };
-      display.drawBitmap(14, 10, imd4r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd4r, 40, 22, 1); // draw d20
       break;
     case 2:
       static const unsigned char PROGMEM imd6r[] = {
@@ -883,7 +899,7 @@ void diceDrawr() {
         , 0x00, 0x00, 0x0f, 0x00, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd6r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd6r, 40, 22, 1); // draw d20
       break;
     case 3:
       static const unsigned char PROGMEM imd8r[] = {
@@ -910,7 +926,7 @@ void diceDrawr() {
         , 0x00, 0x1d, 0x78, 0x00, 0x00
         , 0x00, 0x07, 0x80, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd8r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd8r, 40, 22, 1); // draw d20
       break;
     case 4:
       static const unsigned char PROGMEM imd10r[] = {
@@ -937,7 +953,7 @@ void diceDrawr() {
         , 0x00, 0x00, 0x00, 0x00, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd10r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd10r, 40, 22, 1); // draw d20
       break;
     case 5:
       static const unsigned char PROGMEM imd12r[] = {
@@ -964,7 +980,7 @@ void diceDrawr() {
         , 0x00, 0x00, 0xff, 0xf0, 0x00
         , 0x00, 0x00, 0x00, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd12r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd12r, 40, 22, 1); // draw d20
       break;
     case 6:
       static const unsigned char PROGMEM imd20r[] = {
@@ -991,7 +1007,7 @@ void diceDrawr() {
         , 0x00, 0x03, 0xff, 0x00, 0x00
         , 0x00, 0x00, 0xf0, 0x00, 0x00
       };
-      display.drawBitmap(14, 10, imd20r, 40, 22, 1); // draw d20
+      display.drawBitmap(5, 10, imd20r, 40, 22, 1); // draw d20
       break;
   }
 
