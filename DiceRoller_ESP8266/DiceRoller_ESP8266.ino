@@ -31,6 +31,7 @@ AdafruitIO_Feed *diceR = io.feed("diceRoll");
 //Define+Variables
 
 #define menu 6
+int results[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 bool Next = HIGH;
 bool Dice = HIGH;
 bool diceNum = HIGH;
