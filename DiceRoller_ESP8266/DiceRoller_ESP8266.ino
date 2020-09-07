@@ -21,7 +21,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define WIFI_SSID "Dovahkiin"
 #define WIFI_PASS "FusRoDah"
 #define IO_USERNAME  "Celesmeh"
-#define IO_KEY       "aio_KPyw81v7Al4VIe60GCFSkMt6Cxf1"
+#define IO_KEY       "aio_iYsM81U3rntMoADRPhgndDkbdnaq"
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 
 
@@ -39,6 +39,7 @@ int results[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 bool Next = HIGH;
 bool Dice = HIGH;
 bool diceNum = HIGH;
+bool tilt = HIGH;
 String temp;
 char currentPrintOut[10];
 const int menuSize = 7;
@@ -60,6 +61,10 @@ void setup() {
   //Begin Serial Connection
   Serial.begin(9600);
 
+
+  //Begin Display
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // setup the OLED
+  display.clearDisplay();
   //Connect to adafruit.io
   io.connect();
   //add message handler to feeds
@@ -125,7 +130,7 @@ void loop() {
       MenuChanged();
       Serial.print (currMenu);
     }
-    
+
   }
 
   //Dice # Logic ***************************************************************
@@ -161,11 +166,19 @@ void loop() {
       breakfastSerials();
     }
   }
-    //Tilt Logic ***************************************************************
-  switchState = digitalRead(TILT_SWITCH);
-  Serial.print(switchState);
+  //Tilt Logic ***************************************************************
 
+  switchState = digitalRead(TILT_SWITCH);
+  if (switchState == HIGH) {
+    
+    delay(50);
+    diceT->save(menuItems[currMenu]);
+    Serial.print("sending ->Dice Type ");
+    diceRoll();
+    breakfastSerials();
+  }
 }
+
 
 
 //********************************************************************************************************
@@ -477,7 +490,7 @@ void menuBar() {
 //Random Number
 
 void randRoll() {
-  randNum = random(1, menuItems[currMenu]);
+  randNum = random(1, menuItems[currMenu]+1);
   if (randNum < 10) {
     //single character number
     FontDice();
