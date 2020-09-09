@@ -128,7 +128,7 @@ void loop() {
           menuSize - 1;
       }
       MenuChanged();
-      Serial.print (currMenu);
+      //Serial.print (currMenu);
     }
 
   }
@@ -141,12 +141,12 @@ void loop() {
       //pressed
       if (diceMulti <= 9) {
         diceMulti++;
-        Serial.println(diceMulti);
-        Serial.print("*****************");
+        //Serial.println(diceMulti);
+        Serial.println("*****************");
       }
       else {
         diceMulti = 1;
-        Serial.println(diceMulti);
+        //Serial.println(diceMulti);
       }
       multi();
     }
@@ -161,21 +161,21 @@ void loop() {
     if (!Dice) {
       delay(50);
       diceT->save(menuItems[currMenu]);
-      Serial.print("sending ->Dice Type ");
+      Serial.print("Rolling Dice...");
       diceRoll();
-      breakfastSerials();
+      //breakfastSerials();
     }
   }
   //Tilt Logic ***************************************************************
 
   switchState = digitalRead(TILT_SWITCH);
   if (switchState == HIGH) {
-    
+
     delay(50);
     diceT->save(menuItems[currMenu]);
-    Serial.print("sending ->Dice Type ");
+    Serial.print("Rolling Dice...");
     diceRoll();
-    breakfastSerials();
+    //breakfastSerials();
   }
 }
 
@@ -185,11 +185,11 @@ void loop() {
 //Button testing
 
 void MenuButton() {
-  Serial.println("menu state has changed");
+  //Serial.println("menu state has changed");
   delay(25);
 }
 void TestButton() {
-  Serial.println("button state has changed");
+  //Serial.println("button state has changed");
   delay(25);
 }
 
@@ -210,10 +210,10 @@ void ClearDice() {
 
 void handleDice(AdafruitIO_Data * data) {
 
-  Serial.print("received <- ");
-  Serial.print(data->feedName());
-  Serial.print(" ");
-  Serial.println(data->value());
+  //  Serial.print("received <- ");
+  //  Serial.print(data->feedName());
+  //  Serial.print(" ");
+  //  Serial.println(data->value());
 
 }
 
@@ -235,7 +235,7 @@ void MenuChanged() {
   temp.toCharArray (currentPrintOut, 10);
   display.print("D");
   display.println(currentPrintOut);
-  Serial.println(currentPrintOut); // write the roll
+  //Serial.println(currentPrintOut); // write the roll
   display.display(); // write to display
   delay(25);
 }
@@ -292,7 +292,8 @@ void diceRoll() {
         display.setCursor(87, 14);
         display.println(results[1]); //get rekt
         diceR->save(results[1]);
-        Serial.print("sending -> Dice Roll ");
+        //Serial.print("sending -> Dice Roll ");
+        Serial.println(results[1]);
       }
       else if (results[1] == 20 && menuItems[currMenu] == 20) {
         display.fillScreen(BLACK); // erase all
@@ -302,7 +303,8 @@ void diceRoll() {
         display.setCursor(77, 14);
         display.println(results[1]); // daaamn yuss
         diceR->save(results[1]);
-        Serial.print("sending -> Dice Roll ");
+        //Serial.print("sending -> Dice Roll ");
+        Serial.println(results[1]);
       }
       else if (results[1] < 10) {
         //single character number
@@ -310,7 +312,8 @@ void diceRoll() {
         display.setCursor(87, 14);
         display.println(results[1]); // write the roll
         diceR->save(results[1]);
-        Serial.print("sending -> Dice Roll ");
+        // Serial.print("sending -> Dice Roll ");
+        Serial.println(results[1]);
 
       }
       else {
@@ -319,7 +322,8 @@ void diceRoll() {
         display.setCursor(77, 14);
         display.println(results[1]); // write the roll
         diceR->save(results[1]);
-        Serial.print("sending -> Dice Roll ");
+        //Serial.print("sending -> Dice Roll ");
+        Serial.println(results[1]);
       }
 
       display.display(); // write to display
@@ -331,6 +335,7 @@ void diceRoll() {
       display.setCursor(77, 9);
       for (int i = 1; i <= diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -343,6 +348,7 @@ void diceRoll() {
       display.setCursor(67, 9);
       for (int i = 1; i <= diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -355,6 +361,7 @@ void diceRoll() {
       display.setCursor(60, 9);
       for (int i = 1; i <= diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -367,6 +374,7 @@ void diceRoll() {
       display.setCursor(50, 9);
       for (int i = 1; i <= diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -379,11 +387,13 @@ void diceRoll() {
       display.setCursor(47, 9);
       for (int i = 1; i <= 5; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       display.setCursor(87, 17);
       for (int i = 5; i < diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -396,11 +406,13 @@ void diceRoll() {
       display.setCursor(47, 9);
       for (int i = 1; i <= 5; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       display.setCursor(77, 17);
       for (int i = 5; i < diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -413,11 +425,13 @@ void diceRoll() {
       display.setCursor(47, 9);
       for (int i = 1; i <= 5; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       display.setCursor(67, 17);
       for (int i = 5; i < diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -430,11 +444,13 @@ void diceRoll() {
       display.setCursor(47, 9);
       for (int i = 1; i <= 5; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       display.setCursor(57, 17);
       for (int i = 5; i < diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -446,11 +462,13 @@ void diceRoll() {
       display.setCursor(47, 9);
       for (int i = 1; i <= 5; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       display.setCursor(50, 17);
       for (int i = 5; i < diceMulti; i++) {
         display.print(results[i]);
+        Serial.println(results[1]);
         display.print(" ");
       }
       diceSum();
@@ -490,7 +508,8 @@ void menuBar() {
 //Random Number
 
 void randRoll() {
-  randNum = random(1, menuItems[currMenu]+1);
+  randNum = random(1, menuItems[currMenu] + 1
+                  );
   if (randNum < 10) {
     //single character number
     FontDice();
